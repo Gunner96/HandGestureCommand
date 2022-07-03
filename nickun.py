@@ -22,7 +22,7 @@ cTime = 0
 
 
 # finger_val = [(8,5),(12,9),(16,13),(20,17)]
-finger_val = [(8, 6), (12, 10), (16, 14), (20, 18)]
+finger_val = [(4, 2), (8, 6), (12, 10), (16, 14), (20, 18)]
 status_left = [-1 for _ in finger_val]
 status_right = [-1 for _ in finger_val]
 
@@ -47,6 +47,16 @@ def check_left_right(cord):
         return 0
     return 1
 
+def thumb(fing,coordinate,side):
+    tip = coordinate[fing[0]][0]
+    base = coordinate[fing[1]][0]
+    if side == "left":
+        if tip > base:
+            return 0
+        return 1
+    if tip < base:
+        return 0
+    return 1
 
 
 def checkUp(fing, coordinate):
@@ -88,11 +98,10 @@ while cap.isOpened():
                 # and coordinate[20][0] > mid_point
                 if hand_side and coordinate[20][0] > mid_point and check_left_right(coordinate):
                     for idx, val in enumerate(finger_val):
-                        status_right[idx] = checkUp(val, coordinate)
-                        print("val",val)
-                        print("coordinate",coordinate[val[0]],coordinate[val[1]])
-                        print("distance",calculate(coordinate[val[0]], coordinate[val[1]]))
-
+                        if idx == 0:
+                            status_right[idx] = thumb(val, coordinate, side="right")
+                        else:
+                            status_right[idx] = checkUp(val, coordinate)
 
 
                     cv2.putText(img, "right" + str(status_right), (150, 100), cv2.FONT_HERSHEY_PLAIN, 3,
@@ -100,7 +109,10 @@ while cap.isOpened():
 
                 if hand_side == 0 and coordinate[20][0] < mid_point and check_left_right(coordinate) == 0:
                     for idx, val in enumerate(finger_val):
-                        status_left[idx] = checkUp(val,coordinate)
+                        if idx == 0:
+                            status_left[idx] = thumb(val, coordinate, side="left")
+                        else:
+                            status_left[idx] = checkUp(val, coordinate)
                     status_left.reverse()
                     cv2.putText(img, "left" + str(status_left), (200, 200), cv2.FONT_HERSHEY_PLAIN, 3,
                                 (255, 0, 255), 2)

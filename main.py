@@ -13,7 +13,7 @@ mpDraw = mp.solutions.drawing_utils
 pTime = 0
 cTime = 0
 
-finger_val = [(8,5),(12,9),(16,13),(20,17)]
+finger_val = [(8,5),(12,9),(16,13),(20,17),(4,2)]
 
 def checkUp(fing):
     tip = coordinate[fing[0]][1]
