@@ -103,9 +103,8 @@ while cap.isOpened():
                         else:
                             status_right[idx] = checkUp(val, coordinate)
 
-
-                    cv2.putText(img, "right" + str(status_right), (150, 100), cv2.FONT_HERSHEY_PLAIN, 3,
-                                    (255, 0, 255), 2)
+                    # cv2.putText(img, "right" + str(status_right), (70, 450), cv2.FONT_HERSHEY_PLAIN, 3,
+                    #                 (255, 0, 255), 2)
 
                 if hand_side == 0 and coordinate[20][0] < mid_point and check_left_right(coordinate) == 0:
                     for idx, val in enumerate(finger_val):
@@ -114,9 +113,11 @@ while cap.isOpened():
                         else:
                             status_left[idx] = checkUp(val, coordinate)
                     status_left.reverse()
-                    cv2.putText(img, "left" + str(status_left), (200, 200), cv2.FONT_HERSHEY_PLAIN, 3,
-                                (255, 0, 255), 2)
+                    # cv2.putText(img, "left" + str(status_left), (70, 400), cv2.FONT_HERSHEY_PLAIN, 3,
+                    #             (255, 0, 255), 2)
     print(status_left+status_right)
+    cv2.putText(img, "Command" + str(status_left+status_right), (0, 400), cv2.FONT_HERSHEY_PLAIN, 2,
+                (255, 0, 255), 2)
     comb = status_left+status_right
     command = [1, 1, 1, 0, 0, 1, 1, 1]
     t1 = None
