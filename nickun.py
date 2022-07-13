@@ -4,9 +4,10 @@ import mediapipe as mp
 import time
 import webbrowser
 import numpy as np
-
+from orientation import checkOrientation
 global coordinate
 global hand_side
+
 cap = cv2.VideoCapture(0)
 mpHands = mp.solutions.hands
 hands = mpHands.Hands(max_num_hands=2)
@@ -14,7 +15,8 @@ mpDraw = mp.solutions.drawing_utils
 pTime = 0
 cTime = 0
 
-finger_val = [(4, 2), (8, 6), (12, 10), (16, 14), (20, 18)]
+# finger_val = [(4, 2), (8, 6), (12, 10), (16, 14), (20, 18)]
+finger_val = [(4, 5), (8, 5), (12, 9), (16, 13), (20, 17)]
 status_left = [-1 for _ in finger_val]
 status_right = [-1 for _ in finger_val]
 
@@ -48,12 +50,14 @@ def thumb(fing,coordinate,side):
     return 1
 
 
-def checkUp(fing, coordinate):
-    tip = coordinate[fing[0]][1]
-    base = coordinate[fing[1]][1]
-    if tip > base:
-        return 1
-    return 0
+def checkUp(fing , coordinate):
+    tip = coordinate[fing[0]]
+    base = coordinate[fing[1]]
+    distance = calculate(tip, base)
+    if distance > 25:
+        return 0
+    return 1
+
 
 
 coordinate = {val:(0, 0) for val in range(0,21)}
@@ -67,7 +71,7 @@ while cap.isOpened():
     status_right = [0 for _ in finger_val]
     start = time.perf_counter()
     success, img = cap.read()
-    height,width,channel = img.shape
+    height, width, channel = img.shape
     mid_point = width//2
     img = cv2.flip(img, 1)
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -87,17 +91,24 @@ while cap.isOpened():
                     coordinate[id] = (cx, cy)
                 # and coordinate[20][0] > mid_point
                 #hand_side
-                if hand_side and coordinate[20][0] > mid_point and check_left_right(coordinate):
+                handle = checkOrientation(coordinate)
+                if hand == 'right':
+                    print("Hand shown right")
+                elif hand == 'left':
+                    print("hand shown left")
+
+                if handle == 'right':
                     for idx, val in enumerate(finger_val):
-                        if idx == 0:
-                            status_right[idx] = thumb(val, coordinate, side="right")
-                        else:
-                            status_right[idx] = checkUp(val, coordinate)
+                        # if idx == 0:
+                        #     status_right[idx] = thumb(val, coordinate, side="right")
+                        # else:
+                        #     status_right[idx] = checkUp(val, coordinate)
+                        status_right[idx] = checkUp(val,coordinate)
 
                     # cv2.putText(img, "right" + str(status_right), (70, 450), cv2.FONT_HERSHEY_PLAIN, 3,
                     #                 (255, 0, 255), 2)
-
-                if hand_side == 0 and coordinate[20][0] < mid_point and check_left_right(coordinate) == 0:
+                #
+                elif handle == 'left':
                     for idx, val in enumerate(finger_val):
                         if idx == 0:
                             status_left[idx] = thumb(val, coordinate, side="left")
