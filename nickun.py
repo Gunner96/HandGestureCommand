@@ -1,10 +1,7 @@
-import multiprocessing
 
 import cv2
 import mediapipe as mp
 import time
-# from selenium import webdriver
-# from selenium.webdriver.chrome.options import Options
 import webbrowser
 import numpy as np
 
@@ -17,11 +14,6 @@ mpDraw = mp.solutions.drawing_utils
 pTime = 0
 cTime = 0
 
-# chrome_options = Options()
-# chrome_options.add_experimental_option("detach", True)
-
-
-# finger_val = [(8,5),(12,9),(16,13),(20,17)]
 finger_val = [(4, 2), (8, 6), (12, 10), (16, 14), (20, 18)]
 status_left = [-1 for _ in finger_val]
 status_right = [-1 for _ in finger_val]
@@ -37,9 +29,6 @@ def calculate(upper, lower):
 
 def openBrowser():
     webbrowser.open("https://cus.ac.in/index.php/en/")
-    # driver = webdriver.Chrome('./chromedriver.exe')
-    # driver.get("https://cus.ac.in/index.php/en/")
-    # driver.get(url)
 
 
 def check_left_right(cord):
@@ -67,7 +56,7 @@ def checkUp(fing, coordinate):
     return 0
 
 
-coordinate = {val:(0,0) for val in range(0,21)}
+coordinate = {val:(0, 0) for val in range(0,21)}
 coordinate_1 = {val: (0, 0) for val in range(0, 21)}
 coordinate_2 = {val: (0, 0) for val in range(0, 21)}
 count_main = 0
@@ -84,6 +73,7 @@ while cap.isOpened():
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
     count = 0
+
     if results.multi_hand_landmarks:
         for hand in results.multi_handedness:
             hand_side = hand.classification[0].index
@@ -94,8 +84,9 @@ while cap.isOpened():
                 for id, lm in enumerate(handlms.landmark):
                     h, w, c = img.shape
                     cx, cy = int(lm.x * w), int(lm.y * h)
-                    coordinate[id] = (cx,cy)
+                    coordinate[id] = (cx, cy)
                 # and coordinate[20][0] > mid_point
+                #hand_side
                 if hand_side and coordinate[20][0] > mid_point and check_left_right(coordinate):
                     for idx, val in enumerate(finger_val):
                         if idx == 0:
@@ -123,9 +114,7 @@ while cap.isOpened():
     t1 = None
     if not t1 and comb == command:
         openBrowser()
-        # t1 = multiprocessing.Process(target=openBrowser)
-        # t1.start()
-        # t1.join()
+
     cTime = time.time()
     fps = 1 / (cTime - pTime)
     pTime = cTime
