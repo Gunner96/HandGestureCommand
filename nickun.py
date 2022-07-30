@@ -2,11 +2,11 @@
 import cv2
 import mediapipe as mp
 import time
-import webbrowser
 import numpy as np
 from orientation import checkOrientation
 global coordinate
 global hand_side
+from commands import check_available, fire_up_commands
 
 cap = cv2.VideoCapture(0)
 mpHands = mp.solutions.hands
@@ -97,6 +97,7 @@ coordinate_2 = {val: (0, 0) for val in range(0, 21)}
 count_main = 0
 
 
+
 while cap.isOpened():
     status_left = [0 for _ in finger_val]
     status_right = [0 for _ in finger_val]
@@ -146,7 +147,7 @@ while cap.isOpened():
     cv2.putText(img, "Command" + str(status_left+status_right), (0, 400), cv2.FONT_HERSHEY_PLAIN, 2,
                 (255, 0, 255), 2)
     comb = status_left+status_right
-    command = [1, 1, 1, 0,1,1, 0, 1, 1, 1]
+    command = [1, 1, 1, 0, 1, 1, 0, 1, 1, 1]
     #TRIGGER SIGNAL
     if comb != trigger_command[1]:
         trigger_command[0] = trigger_command[1]
@@ -154,9 +155,18 @@ while cap.isOpened():
 
     # cv2.putText(img, "Command" + str(trigger_command[0]) + str(trigger_command[1]), (0, 400), cv2.FONT_HERSHEY_PLAIN, 2,
     #             (255, 0, 255), 2)
+
     if trigger_command[0] != trigger_command[1] and trigger_command[1] == default_command:
-        if trigger_command[0] == command:
-            openBrowser()
+        print("unique")
+        print("both",trigger_command[0],trigger_command[1])
+        if check_available(trigger_command[0]):
+            print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+            fire_up_commands(trigger_command[0])
+
+        trigger_command[0] = trigger_command[1]
+        trigger_command[1] = default_command
+
+
 
 
 
