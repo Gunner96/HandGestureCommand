@@ -113,7 +113,7 @@ while cap.isOpened():
     if results.multi_hand_landmarks:
         for hand in results.multi_handedness:
             hand_side = hand.classification[0].index
-            print("hand_side",hand_side)
+            # print("hand_side",hand_side)
             for handlms in results.multi_hand_landmarks:
                 mpDraw.draw_landmarks(img, handlms, mpHands.HAND_CONNECTIONS)
 
@@ -143,7 +143,7 @@ while cap.isOpened():
                     status_left.reverse()
                     # cv2.putText(img, "left" + str(status_left), (70, 400), cv2.FONT_HERSHEY_PLAIN, 3,
                     #             (255, 0, 255), 2)
-    print(status_left+status_right)
+    # print(status_left+status_right)
     cv2.putText(img, "Command" + str(status_left+status_right), (0, 400), cv2.FONT_HERSHEY_PLAIN, 2,
                 (255, 0, 255), 2)
     comb = status_left+status_right
@@ -157,7 +157,7 @@ while cap.isOpened():
     #             (255, 0, 255), 2)
 
     if trigger_command[0] != trigger_command[1] and trigger_command[1] == default_command:
-        print("unique")
+        # print("unique")
         print("both",trigger_command[0],trigger_command[1])
         if check_available(trigger_command[0]):
             print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")

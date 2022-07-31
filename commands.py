@@ -49,34 +49,10 @@ def command5():
     pass
 
 
-def command6():
-    print("command6")
-    pass
-
-
-def command7():
-    print("command7")
-    pass
-
-
-def command8():
-    print("command8")
-    pass
-
-
-def command9():
-    print("command9")
-    pass
-
-
-def command10():
-    print("command10")
-    pass
-
 
 # Dictionary for storing key and values, keys are the function that will be triggered and the values are the commands
 # that gets fired off if the value matches
 
-command_function_dict = {command1: [0, 0, 0, 0, 0, 1, 1, 1, 1, 1], command2: [0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-                         command3: [], command4: [],
-                         command5: [], command6: [], command7: [], command8: [], command9: [], command10: []}
+command_function_dict = {command1: [0, 0, 0, 0, 0, 1, 1, 1, 1, 1], command2: [0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+                         command3: [0, 0, 1, 1, 0, 0, 1, 1, 0, 0], command4: [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+                         command5: [0, 0, 0, 0, 0, 0, 1, 1, 0, 0]}
