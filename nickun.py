@@ -1,12 +1,12 @@
-
 import cv2
 import mediapipe as mp
 import time
 import numpy as np
 from orientation import checkOrientation
+
 global coordinate
 global hand_side
-from commands import check_available, fire_up_commands
+from commands2 import check_available, fire_up_commands
 
 cap = cv2.VideoCapture(0)
 mpHands = mp.solutions.hands
@@ -19,11 +19,12 @@ finger_val = [(4, 2), (8, 6), (12, 10), (16, 14), (20, 18)]
 # finger_val = [(4, 5), (8, 5), (12, 9), (16, 13), (20, 17)]
 status_left = [-1 for _ in finger_val]
 status_right = [-1 for _ in finger_val]
-trigger_command = [[0],[0]]
+trigger_command = [[0], [0]]
 default_command = [0 for val in range(10)]
 
+
 def calculate(upper, lower):
-    print("from calculate",upper,lower)
+    print("from calculate", upper, lower)
     point1 = np.array(upper)
     point2 = np.array(lower)
     dist = np.linalg.norm(point1 - point2)
@@ -39,7 +40,8 @@ def check_left_right(cord):
         return 0
     return 1
 
-def thumb(fing,coordinate,side,orient):
+
+def thumb(fing, coordinate, side, orient):
     axis = 0
     upper = 0
     lower = 1
@@ -57,7 +59,8 @@ def thumb(fing,coordinate,side,orient):
         return 0
     return 1
 
-def checkUp(fing , coordinate,orient):
+
+def checkUp(fing, coordinate, orient):
     axis = 1
     upper = 0
     lower = 1
@@ -75,6 +78,7 @@ def checkUp(fing , coordinate,orient):
         return 1
     return 0
 
+
 # def checkUp(fing , coordinate,orient):
 #     x = 1
 #     if orient == "upside":
@@ -90,13 +94,10 @@ def checkUp(fing , coordinate,orient):
 #     return 0
 
 
-
-coordinate = {val:(0, 0) for val in range(0,21)}
+coordinate = {val: (0, 0) for val in range(0, 21)}
 coordinate_1 = {val: (0, 0) for val in range(0, 21)}
 coordinate_2 = {val: (0, 0) for val in range(0, 21)}
 count_main = 0
-
-
 
 while cap.isOpened():
     status_left = [0 for _ in finger_val]
@@ -104,7 +105,7 @@ while cap.isOpened():
     start = time.perf_counter()
     success, img = cap.read()
     height, width, channel = img.shape
-    mid_point = width//2
+    mid_point = width // 2
     img = cv2.flip(img, 1)
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
@@ -126,9 +127,9 @@ while cap.isOpened():
                 if handle[0] == 'right':
                     for idx, val in enumerate(finger_val):
                         if idx == 0:
-                            status_right[idx] = thumb(val, coordinate, side="right",orient=handle[1])
+                            status_right[idx] = thumb(val, coordinate, side="right", orient=handle[1])
                         else:
-                            status_right[idx] = checkUp(val, coordinate,orient=handle[1])
+                            status_right[idx] = checkUp(val, coordinate, orient=handle[1])
                         # status_right[idx] = checkUp(val,coordinate)
 
                     # cv2.putText(img, "right" + str(status_right), (70, 450), cv2.FONT_HERSHEY_PLAIN, 3,
@@ -137,40 +138,33 @@ while cap.isOpened():
                 elif handle[0] == 'left':
                     for idx, val in enumerate(finger_val):
                         if idx == 0:
-                            status_left[idx] = thumb(val, coordinate, side="left",orient=handle[1])
+                            status_left[idx] = thumb(val, coordinate, side="left", orient=handle[1])
                         else:
-                            status_left[idx] = checkUp(val, coordinate,orient=handle[1])
+                            status_left[idx] = checkUp(val, coordinate, orient=handle[1])
                     status_left.reverse()
                     # cv2.putText(img, "left" + str(status_left), (70, 400), cv2.FONT_HERSHEY_PLAIN, 3,
                     #             (255, 0, 255), 2)
     # print(status_left+status_right)
-    cv2.putText(img, "Command" + str(status_left+status_right), (0, 400), cv2.FONT_HERSHEY_PLAIN, 2,
+    cv2.putText(img, "Command" + str(status_left + status_right), (0, 400), cv2.FONT_HERSHEY_PLAIN, 2,
                 (255, 0, 255), 2)
-    comb = status_left+status_right
-    command = [1, 1, 1, 0, 1, 1, 0, 1, 1, 1]
-    #TRIGGER SIGNAL
+    comb = status_left + status_right
+
+    # COMMAND QUEUE
     if comb != trigger_command[1]:
         trigger_command[0] = trigger_command[1]
         trigger_command[1] = comb
 
-    # cv2.putText(img, "Command" + str(trigger_command[0]) + str(trigger_command[1]), (0, 400), cv2.FONT_HERSHEY_PLAIN, 2,
-    #             (255, 0, 255), 2)
-
+    # TRIGGER BLOCK
     if trigger_command[0] != trigger_command[1] and trigger_command[1] == default_command:
         # print("unique")
-        print("both",trigger_command[0],trigger_command[1])
+        print("both", trigger_command[0], trigger_command[1])
         if check_available(trigger_command[0]):
-            print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
             fire_up_commands(trigger_command[0])
 
+        # COMMAND QUEUE RESET
         trigger_command[0] = trigger_command[1]
         trigger_command[1] = default_command
-
-
-
-
-
-
+    # TRIGGER BLOCK END
 
     cTime = time.time()
     fps = 1 / (cTime - pTime)
